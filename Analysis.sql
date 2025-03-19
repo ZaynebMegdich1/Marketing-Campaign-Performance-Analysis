@@ -38,3 +38,28 @@ GROUP BY
     c.customer_id, c.first_name, c.last_name, c.gender, c.age, c.join_date
 ORDER BY 
     customer_membership_duration DESC;
+
+-- Campaign Performance Analysis: -- This query provides campaign performance details, including campaign name, channel type, total spend, total impressions, total clicks, total conversions, conversion rate, and click-through rate (CTR), ordered by total conversions.
+
+SELECT 
+    campaign_name,
+    COALESCE(channel_type, 'Unknown') AS channel_type,
+    SUM(f.spend_amount) AS total_spend,
+    SUM(f.impressions) AS total_impressions,
+    SUM(f.clicks) AS total_clicks,
+    SUM(f.conversions) AS total_conversions,
+    CAST((SUM(f.conversions) * 100.0 / NULLIF(SUM(f.impressions), 0)) AS DECIMAL(18,2)) AS conversion_rate,
+    CAST((SUM(f.clicks) * 100.0 / NULLIF(SUM(f.impressions), 0)) AS DECIMAL(18,2)) AS ctr
+FROM 
+    gold.dim_campaign c
+INNER JOIN 
+    gold.fact f ON c.campaign_id = f.campaign_id
+GROUP BY 
+    campaign_name, 
+    channel_type, 
+    c.start_date, 
+    c.end_date
+ORDER BY 
+    total_conversions DESC;
+
+
