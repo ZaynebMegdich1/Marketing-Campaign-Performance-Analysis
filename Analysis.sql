@@ -1,3 +1,99 @@
+-- ========================================
+-- General Overview
+-- ========================================
+
+-- Total Number of Customers
+SELECT COUNT(*) AS total_customers
+FROM gold.dim_customer;
+
+-- Total Number of Products
+SELECT COUNT(*) AS total_products
+FROM gold.dim_product;
+
+-- Total Number of Campaigns
+SELECT COUNT(*) AS total_campaigns
+FROM gold.dim_campaign;
+
+-- Distinct Marketing Channels Used
+SELECT DISTINCT COALESCE(channel_type, 'Unknown') AS channel_type
+FROM gold.dim_campaign;
+
+-- ========================================
+-- Customer Insights
+-- ========================================
+
+-- Top 5 Cities with the Most Customers
+SELECT TOP(5)
+    city, 
+    COUNT(*) AS total_customers
+FROM gold.dim_customer
+GROUP BY city
+ORDER BY total_customers DESC;
+
+-- Age Distribution (Min, Max, and Average Age)
+SELECT 
+    MIN(age) AS min_age,
+    MAX(age) AS max_age,
+    AVG(age) AS avg_age
+FROM gold.dim_customer;
+
+-- ========================================
+-- Product Insights
+-- ========================================
+
+-- Products with the Highest Number of Conversions
+SELECT TOP(5)
+    p.product_name,
+    SUM(f.conversions) AS total_conversions
+FROM gold.dim_product p
+JOIN gold.fact f ON p.product_id = f.product_id
+GROUP BY p.product_name
+ORDER BY total_conversions DESC;
+
+-- Products with the Lowest Inventory
+SELECT TOP(5)
+    product_name, 
+    SUM(inventory) AS total_inventory
+FROM gold.dim_product
+GROUP BY product_name
+ORDER BY total_inventory ASC;
+
+-- ========================================
+-- Campaign Insights
+-- ========================================
+
+-- Top 5 Campaigns with the Highest Spend
+SELECT TOP(5)
+    campaign_name, 
+    SUM(f.spend_amount) AS total_spend
+FROM gold.fact f
+JOIN gold.dim_campaign c ON f.campaign_id = c.campaign_id
+GROUP BY campaign_name
+ORDER BY total_spend DESC;
+
+-- Top 5 Most Successful Campaigns (Based on Conversions)
+SELECT TOP(5)
+    campaign_name, 
+    SUM(f.conversions) AS total_conversions
+FROM gold.fact f
+JOIN gold.dim_campaign c ON f.campaign_id = c.campaign_id
+GROUP BY campaign_name
+ORDER BY total_conversions DESC;
+
+-- Most Used Marketing Channels
+SELECT 
+    COALESCE(channel_type, 'Unknown') AS channel_type, 
+    COUNT(*) AS total_campaigns
+FROM gold.dim_campaign
+GROUP BY channel_type
+ORDER BY total_campaigns DESC;
+
+
+-- ========================================
+-- Advanced Analysis
+-- ========================================
+
+
 -- Product Overview Analysis: This query provides insights into product performance, including total price, spend, inventory, impressions, clicks, conversion rate, and cost per conversion.
 SELECT 
 	pr.product_name,
