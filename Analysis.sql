@@ -16,3 +16,25 @@ GROUP BY
     pr.product_name, pr.inventory
 ORDER BY 
     conversion_rate DESC;
+
+-- Customer Overview Analysis:This query provides customer details, including full name, gender, age group, membership duration, and total impressions, ordered by membership duration.
+
+SELECT 
+    c.customer_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS full_name,
+    c.gender,
+    CASE 
+        WHEN c.age BETWEEN 18 AND 30 THEN '18-30'
+        WHEN c.age BETWEEN 31 AND 40 THEN '31-40'
+        WHEN c.age BETWEEN 41 AND 50 THEN '41-50'
+    END AS age_group,
+    DATEDIFF(day, c.join_date, GETDATE()) AS customer_membership_duration,  -- Duration as days
+    SUM(f.impressions) AS total_impressions
+FROM 
+    gold.dim_customer c
+INNER JOIN 
+    gold.fact f ON c.customer_id = f.customer_id
+GROUP BY 
+    c.customer_id, c.first_name, c.last_name, c.gender, c.age, c.join_date
+ORDER BY 
+    customer_membership_duration DESC;
