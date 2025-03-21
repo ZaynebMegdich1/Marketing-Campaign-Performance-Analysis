@@ -136,6 +136,41 @@ GROUP BY
 ORDER BY 
     customer_membership_duration DESC;
 
+--Customer Engagement & Conversion Analysis by Tenure and Gender: This query performs an analysis of customer engagement and conversion metrics, segmented by both membership tenure and gender
+
+SELECT 
+    CASE 
+        WHEN DATEDIFF(day, c.join_date, GETDATE()) > 365 AND DATEDIFF(day, c.join_date, GETDATE()) <= 1095 
+            THEN 'Mid-Tenure Customer'
+        WHEN DATEDIFF(day, c.join_date, GETDATE()) > 1095 
+            THEN 'Long-Tenure Customer'
+    END AS customer_tenure,  -- Category based on membership duration
+    CASE 
+        WHEN c.gender = 'F' THEN 'Female'
+        WHEN c.gender = 'M' THEN 'Male'
+    END AS gender,
+    SUM(f.impressions) AS total_impressions,
+    SUM(f.conversions) AS total_conversions,
+    CAST((SUM(f.conversions) * 100.0 / NULLIF(SUM(f.impressions), 0)) AS DECIMAL(18,3)) AS conversion_rate,
+    CAST(SUM(f.clicks) * 100.0 / NULLIF(SUM(f.impressions), 0) AS DECIMAL(18,2)) AS click_through_rate
+FROM 
+    gold.dim_customer c
+INNER JOIN 
+    gold.fact f ON c.customer_id = f.customer_id
+GROUP BY 
+    CASE 
+        WHEN DATEDIFF(day, c.join_date, GETDATE()) > 365 AND DATEDIFF(day, c.join_date, GETDATE()) <= 1095 
+            THEN 'Mid-Tenure Customer'
+        WHEN DATEDIFF(day, c.join_date, GETDATE()) > 1095 
+            THEN 'Long-Tenure Customer'
+    END, 
+    CASE 
+        WHEN c.gender = 'F' THEN 'Female'
+        WHEN c.gender = 'M' THEN 'Male'
+    END
+ORDER BY 
+    customer_tenure DESC;
+
 -- Campaign Performance Analysis: -- This query provides campaign performance details, including campaign name, channel type, total spend, total impressions, total clicks, total conversions, conversion rate, and click-through rate (CTR), ordered by total conversions.
 
 SELECT 
