@@ -114,7 +114,7 @@ GROUP BY
 ORDER BY 
     conversion_rate DESC;
 
--- Customer Overview Analysis:This query provides customer details, including full name, gender, age group, membership duration, and total impressions, ordered by membership duration.
+-- Customer Overview Analysis: This query provides customer details, including full name, gender, age group, membership duration, and total impressions, ordered by membership duration.
 
 SELECT 
     c.customer_id,
@@ -125,7 +125,7 @@ SELECT
         WHEN c.age BETWEEN 31 AND 40 THEN '31-40'
         WHEN c.age BETWEEN 41 AND 50 THEN '41-50'
     END AS age_group,
-    DATEDIFF(day, c.join_date, GETDATE()) AS customer_membership_duration,  -- Duration as days
+    DATEDIFF(day, c.join_date, GETDATE()) AS customer_membership_duration,
     SUM(f.impressions) AS total_impressions
 FROM 
     gold.dim_customer c
@@ -144,7 +144,7 @@ SELECT
             THEN 'Mid-Tenure Customer'
         WHEN DATEDIFF(day, c.join_date, GETDATE()) > 1095 
             THEN 'Long-Tenure Customer'
-    END AS customer_tenure,  -- Category based on membership duration
+    END AS customer_tenure, 
     CASE 
         WHEN c.gender = 'F' THEN 'Female'
         WHEN c.gender = 'M' THEN 'Male'
@@ -174,26 +174,26 @@ ORDER BY
 -- Campaign Performance Analysis: -- This query provides campaign performance details, including campaign name, channel type, total spend, total impressions, total clicks, total conversions, conversion rate, and click-through rate (CTR), ordered by total conversions.
 
 SELECT 
-	campaign_name,
-	COALESCE(channel_type,'Unkown') as channel_type,
+    campaign_name,
+    COALESCE(channel_type,'Unkown') as channel_type,
     SUM(f.spend_amount) AS total_spend,
     SUM(f.impressions) AS total_impressions,
     SUM(f.clicks) AS total_clicks,
     SUM(f.conversions) AS total_conversions, 
     CAST((SUM(f.conversions) * 100.0 / NULLIF(SUM(f.impressions), 0)) AS DECIMAL(18,3)) AS conversion_rate,  
-	CAST(SUM(CAST(f.spend_amount AS DECIMAL(18,2))) / NULLIF(SUM(CAST(f.conversions AS DECIMAL(18,2))), 0) AS DECIMAL(18,2)) AS cost_per_conversion,
+    CAST(SUM(CAST(f.spend_amount AS DECIMAL(18,2))) / NULLIF(SUM(CAST(f.conversions AS DECIMAL(18,2))), 0) AS DECIMAL(18,2)) AS cost_per_conversion,
     CAST((SUM(f.clicks) * 100.0 / NULLIF(SUM(f.impressions), 0)) AS DECIMAL(18,2)) AS ctr
 FROM 
-    gold.dim_campaign c  -- Joining campaigns table
+    gold.dim_campaign c  
 INNER JOIN 
-    gold.fact f ON c.campaign_id = f.campaign_id  -- Joining fact table for campaign performance data
+    gold.fact f ON c.campaign_id = f.campaign_id  
 GROUP BY 
     campaign_name, 
     channel_type, 
     c.start_date, 
     c.end_date
 ORDER BY 
-    total_conversions DESC;  -- Order by total spend for prioritizing high-budget campaigns
+    total_conversions DESC;  
 
 
 --Channel:
@@ -213,5 +213,7 @@ GROUP BY
     channel_type
 ORDER BY 
     total_conversions DESC;
+
+
 
 
