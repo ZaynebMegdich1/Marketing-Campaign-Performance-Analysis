@@ -194,4 +194,22 @@ GROUP BY
 ORDER BY 
     total_conversions DESC;
 
+--Channel:
+SELECT 
+    COALESCE(channel_type,'Unkown') as channel_type,
+    SUM(f.spend_amount) AS total_spend,  -- Total Spend for the campaign
+    SUM(f.impressions) AS total_impressions,  -- Total Impressions
+    SUM(f.clicks) AS total_clicks,  -- Total Clicks
+    SUM(f.conversions) AS total_conversions,  -- Total Conversions
+	CAST((SUM(f.conversions) * 100.0 / NULLIF(SUM(f.impressions), 0)) AS DECIMAL(18,3)) AS conversion_rate,
+    CAST(SUM(f.clicks) * 100.0 / NULLIF(SUM(f.impressions), 0) AS DECIMAL(18,2)) AS click_through_rate
+FROM 
+    gold.dim_campaign c  -- Joining campaigns table
+INNER JOIN 
+    gold.fact f ON c.campaign_id = f.campaign_id  -- Joining fact table for campaign performance data
+GROUP BY  
+    channel_type
+ORDER BY 
+    total_conversions DESC;
+
 
