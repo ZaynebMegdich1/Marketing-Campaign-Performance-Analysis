@@ -7,6 +7,7 @@ This project involves the analysis of marketing campaign performance using data 
 ### 📊 **Views Used**
 
 **Gold Layer Views:**
+
 The following views, created in the DWH Marketing Campaign Performance project, are used in the analysis:
 
 Campaign Performance View
