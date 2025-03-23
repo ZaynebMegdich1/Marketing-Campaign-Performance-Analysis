@@ -10,13 +10,13 @@ This project involves the analysis of marketing campaign performance using data 
 
 The following views, created in the DWH Marketing Campaign Performance project, are used in the analysis:
 
-Campaign Performance View
+_Campaign Performance View
 
-Channel Performance View
+_Channel Performance View
 
-Customer Engagement View
+_Customer Engagement View
 
-Media Spend Analysis View
+_Media Spend Analysis View
 
 
 
